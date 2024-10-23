@@ -2,7 +2,6 @@ import os
 
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap
-from flask_ckeditor import CKEditor
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
@@ -12,6 +11,7 @@ from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 from flask_gravatar import Gravatar
 from functools import wraps
 from flask import abort
+from markdown import markdown
 
 from sqlalchemy import Table, Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
@@ -29,7 +29,6 @@ except:
     SECRET_KEY = os.getenv('SECRET_KEY')
     app.config['SECRET_KEY'] = SECRET_KEY
 # app.config['SECRET_KEY'] = "8BYkEfBA6O6donzWlSihBXox7C0sKR6b"
-ckeditor = CKEditor(app)
 Bootstrap(app)
 
 ##CONNECT TO DB
@@ -255,8 +254,11 @@ def show_post(post_id):
     requested_post = BlogPost.query.get(post_id)
     form = CommentForm()
     komentari = Comment.query.filter_by(post_id=post_id).all()
+    for post in komentari:
+        post.body_html = markdown(post.body)
     print(komentari)
     # print(komentari[0].body)
+    requested_post.body_html = markdown(requested_post.body)
 
     if form.validate_on_submit():
         try:
@@ -273,16 +275,13 @@ def show_post(post_id):
 
             db.session.add(new_com)
             db.session.commit()
-            komentari = Comment.query.filter_by(post_id=post_id).all()
-            print(komentari)
-            # print(komentari[0].body)
-            return render_template("post.html", all_komentari=komentari, post=requested_post, current_user=current_user, form=form) #, logged_in=current_user.is_authenticated)
+
+            return redirect(url_for('show_post', post_id=post_id)) 
         except AttributeError:
             # print(current_user.id)
-            flash("Treba da se uloguješ ili registruješ da bi komentarisao")
+            flash("You need to log in or register to comment")
             return redirect(url_for('login'))
     return render_template("post.html", all_komentari=komentari, post=requested_post, current_user=current_user, form=form)
-
 
 @app.route("/about")
 def about():
@@ -345,5 +344,8 @@ def delete_post(post_id):
     return redirect(url_for('get_all_posts', logged_in=current_user.is_authenticated))
 
 
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    debug_mode = os.getenv('FLASK_DEBUG') == 'development'
+
+    app.run(host='0.0.0.0', port=5000, debug=debug_mode)

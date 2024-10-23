@@ -25,7 +25,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-            {{ post.body|safe }}
+            {{ post.body_html|safe }}
           <hr>
 
 
@@ -35,27 +35,39 @@
               {% endif %}
             </div>
 
+          <!--           Comments Area -->
 
-
-<!--           Comments Area -->
-<!--          #Load the CKEditor-->
-            {{ ckeditor.load() }}
-<!--          #Configure it with the name of the form field from CommentForm-->
-            {{ ckeditor.config(name='comment_text') }}
 <!--          #Create the wtf quickform from CommentForm-->
             {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+
+            <style>
+              /* Adjust the height of the EasyMDE editor */
+              .EasyMDEContainer {
+                max-height: 200px; /* Set the maximum height */
+                overflow-y: auto;
+
+              }
+            </style>
+            <script>
+              const easyMDE = new EasyMDE({
+                element: document.getElementById('custom_body_id'),
+
+              });
+            </script>
+
+
           <div class="col-lg-8 col-md-10 mx-auto comment">
                 {% for posta in all_komentari %}
               <ul class="commentList">
 <!--Bilo mi je ovde % for posta in all_komentari %, ond daje slajder -->
                 <li>
 
-                    <div class="commenterImage">
+                    <!-- <div class="commenterImage">
                       <img src="https://pbs.twimg.com/profile_images/744849215675838464/IH0FNIXk.jpg"/>
-                    </div>
+                    </div> -->
                     <div class="commentText">
 <!--                      |safe  omogu'ava da se ne vide htbl tagovi, s obyirom da ih forma daje -->
-                      <p>{{posta.body |safe}}</p>
+                      <p>{{posta.body_html |safe}}</p>
 
                       <span class="date sub-text">{{posta.comment_author.name}}</span>
 <!--                        {{posta.comment_author.name}}-->
@@ -74,4 +86,5 @@
   </article>
 
   <hr>
+
 {% include "footer.html" %}

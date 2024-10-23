@@ -25,9 +25,25 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto">
-        {{ ckeditor.load() }}
-        {{ ckeditor.config(name='body') }}
+
         {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "primary"}) }}
+      
+        <style>
+          /* Adjust the height of the EasyMDE editor */
+          .EasyMDEContainer {
+            max-height: 200px;
+            /* Set the maximum height */
+            overflow-y: auto;
+        
+          }
+        </style>
+        <script>
+          const easyMDE = new EasyMDE({
+            element: document.getElementById('body'),
+
+          });
+        </script>
+      
       </div>
     </div>
   </div>

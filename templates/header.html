@@ -23,6 +23,9 @@
   <script defer src="https://umami.devnet.top/script.js" data-website-id="f379e55f-caaf-431b-a221-3a25c528b0e1"></script>
 
   <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico')}}" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+  
 
 </head>
 
@@ -49,11 +52,13 @@
               <a class="nav-link" href="{{ url_for('register') }}">Register</a>
             </li>
           {% endif %}
-      
+            
+          {% if current_user.is_authenticated: %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
           </li>
-    
+          {% endif %}
+          
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('about') }}">About</a>
           </li>
