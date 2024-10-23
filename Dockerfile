@@ -16,5 +16,8 @@ RUN pip install -r requirements.txt
 # Izloži port na kojem će aplikacija slušati
 EXPOSE 8000
 
-# Pokreni Gunicorn server
-CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:8000"]
+# Kreiraj direktorijum za logove
+RUN mkdir -p /var/log/gunicorn
+
+# Dodaj CMD komandu sa logovanjem
+CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:8000", "--access-logfile", "/var/log/gunicorn/access.log", "--error-logfile", "/var/log/gunicorn/error.log"]
